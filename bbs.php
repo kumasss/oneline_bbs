@@ -2,9 +2,14 @@
   // ここにDBに登録する処理を記述する
   // ①DBへ接続
 
-$dsn = 'mysql:dbname=oneline_bbs;host=localhost';
-$user = 'root';
-$password = '';
+// ※以下はサンプルなので、自身のサーバー情報を設定してください。
+
+// dbnameをロリポップのデータベース名に、hostをロリポップのサーバーに変更
+$dsn = 'mysql:dbname=LAA0778947-onelinebbs;host=mysql114.phy.lolipop.lan';
+// userをロリポップのユーザー名に変更
+$user = 'LAA0778947';
+// passwordをロリポップのパスワードに変更
+$password = 'Esysbad1';
 $dbh = new PDO($dsn, $user, $password);
 $dbh->query('SET NAMES utf8');
 
@@ -40,7 +45,7 @@ $dbh->query('SET NAMES utf8');
       }else{
  // ②SQL文の作成
     //データを登録する
-  $sql = 'INSERT INTO `posts`(`nickname`,`comment`,`created`)VALUES(?,?,now())';
+  $sql = 'INSERT INTO `posts`(`nickname`,`comment`,`created`,`delete_flag`)VALUES(?,?,now(),0)';
   $data[] = $_POST['nickname'];
   $data[] = $_POST['comment'];
 }
@@ -48,8 +53,25 @@ $dbh->query('SET NAMES utf8');
   $stmt = $dbh->prepare($sql);
   $stmt->execute($data);
   }
+  //------------------------------
+//データの削除処理
+if(!empty($_GET['action'])&&$_GET['action']=='delete'){
+ //$sql='DLEATE FRO<'
+  UPDATE `posts` SET `delete_flag`=1 WHERE `id` =3
+  $data[]=$_GET['id'];
+// SQLを実行
+  $stmt = $dbh->prepare($sql);
+  $stmt->execute($data);
+
+
+//bbs.phpに画面を遷移する
+header('Location: bbs.php');
+exit();
+}
+
+//------------------------------
 //データの一覧表示 
-  $sql='SELECT * FROM `posts`ORDER BY `created` DESC';
+  $sql='SELECT * FROM `posts` WHERE`delete_flag`=0 ORDER BY `created` DESC';
 
  // SQLを実行
   $stmt = $dbh->prepare($sql);
@@ -167,6 +189,7 @@ $dbh->query('SET NAMES utf8');
                       <h2><a href="#"><?php echo $d['nickname']; ?></a> 
                         <span><?php echo $created; ?></span></h2>
                       <p><?php echo $d['comment']; ?></p>
+                      <a href="bbs.php?action=delete&id=<?php echo $d['id']; ?>" onclick="return confirm('本当に削除しますか？');"><i class="fa fa-trash trash" aria-hidden="true"></i></a>
                   </div>
               </div>
           </article>
