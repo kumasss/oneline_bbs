@@ -179,8 +179,8 @@ exit();
                   </div>
                 </a>
                   <div class="timeline-label">
-            
-                    <?php 
+
+                    <?php
                    //1.文字列から日付型へ変換する
                     $created = strtotime($d['created']); 
                     //2.フォーマットを指定
@@ -215,6 +215,4 @@ exit();
   <script src="assets/js/form.js"></script>
 </body>
 </html>
-
-
 
